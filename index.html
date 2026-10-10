@@ -8,20 +8,54 @@
 :root{--bg:#f6f0e3;--card:#fffdf8;--ink:#17323d;--mut:#76878d;--line:#ebe0cb;--inc:#3d7a4c;--incbg:#e6f0e2;--exp:#c4553a;--expbg:#f8e4dd;--acc:#d9a441;--hd:#17323d;--hdt:#f6f0e3;--wk:#faf5ea;--today:#fff0c4;--hov:#f4ecda;--sh:0 1px 2px rgba(23,50,61,.06),0 8px 24px rgba(23,50,61,.07);color-scheme:light}
 @media(prefers-color-scheme:dark){:root{--bg:#0e222c;--card:#15303c;--ink:#f1e8d6;--mut:#9fb0b6;--line:#25414e;--inc:#8fcf9b;--incbg:#1b3a33;--exp:#f0917a;--expbg:#40262a;--acc:#e3b24f;--hd:#0a1a22;--hdt:#f1e8d6;--wk:#183643;--today:#3a3320;--hov:#1b3947;--sh:0 1px 2px rgba(0,0,0,.3);color-scheme:dark}}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif}
 h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
 .wrap{max-width:1240px;margin:auto;padding:0 18px}
-header{background:var(--hd);color:var(--hdt);border-bottom:4px solid var(--acc)}
-header .wrap{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px 18px}
-.brand{display:flex;align-items:center;gap:12px}.brand .logo{font-size:30px}.brand h1{font-size:24px;line-height:1.1}
-.brand small{opacity:.65;letter-spacing:.14em;text-transform:uppercase;font-size:10px}
+#app{display:flex;min-height:100vh}
+#side{width:252px;flex:none;background:var(--hd);color:var(--hdt);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;border-right:4px solid var(--acc);transition:width .2s,transform .22s;z-index:50}
+.sb-brand{display:flex;align-items:center;gap:11px;padding:18px 16px 10px}.sb-brand .logo{font-size:28px}.sb-brand h1{font-size:21px;line-height:1.1}
+.sb-brand small{display:block;opacity:.6;letter-spacing:.14em;text-transform:uppercase;font-size:9.5px}
+#side nav{flex:1;overflow-y:auto;padding:4px 10px}
+.gh2{width:100%;display:flex;justify-content:space-between;align-items:center;background:none;border:0;color:var(--hdt);opacity:.6;text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:700;padding:14px 8px 6px;text-align:left}
+.gh2 .chev{transition:transform .2s}.grp.closed .chev{transform:rotate(-90deg)}.grp.closed .gi{display:none}
+.nav{width:100%;display:flex;align-items:center;gap:12px;background:none;border:0;color:var(--hdt);padding:10px 12px;border-radius:12px;text-align:left;font-weight:500;opacity:.88;margin-bottom:2px}
+.nav:hover{background:rgba(255,255,255,.09)}.nav.on{background:var(--acc);color:#17323d;opacity:1;font-weight:700}
+.ic{font-size:17px;width:22px;text-align:center;flex:none}
+.sb-foot{padding:12px 12px 16px;display:grid;gap:6px;border-top:1px solid rgba(255,255,255,.12)}
+.sb-foot button{display:flex;align-items:center;gap:10px;background:none;border:1px solid rgba(255,255,255,.22);color:var(--hdt);border-radius:10px;padding:8px 10px;font-size:13px;opacity:.9;text-align:left}
+#main{flex:1;min-width:0}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 22px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+.top h2{font-size:22px}.top .sp{flex:1}.top .btn.big{padding:10px 16px}
+#burger{background:none;border:1px solid var(--line);border-radius:10px;width:40px;height:40px;font-size:18px;color:var(--ink)}
 .mnav{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.mnav button,.mnav select{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:var(--hdt);border-radius:10px;padding:8px 12px;font-weight:600}
-.mnav select option{color:#17323d}
-.mnav .arrow{font-size:18px;line-height:1;padding:6px 13px}.mnav .today-b{background:var(--acc);color:#17323d;border-color:var(--acc)}
-.tools{display:flex;gap:6px}.tools button{background:none;border:1px solid rgba(255,255,255,.22);color:var(--hdt);border-radius:10px;padding:7px 11px;font-size:13px;opacity:.85}
+.mnav button,.mnav select{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600}
+.mnav .arrow{font-size:18px;line-height:1;padding:6px 13px}.mnav .today-b{background:var(--acc);border-color:var(--acc);color:#17323d}
+#ov{display:none}
+@media(min-width:901px){body.sbc #side{width:70px}body.sbc .sb-brand h1,body.sbc .sb-brand small,body.sbc .tx,body.sbc .gh2 span{display:none}body.sbc .sb-brand{justify-content:center;padding:18px 0 10px}body.sbc .nav,body.sbc .sb-foot button{justify-content:center;padding:10px 0}body.sbc .gh2{border-top:1px solid rgba(255,255,255,.15);margin-top:8px;padding:2px}}
+@media(max-width:900px){#side{position:fixed;left:0;top:0;transform:translateX(-102%);width:262px}body.sbo #side{transform:none}body.sbo #ov{display:block;position:fixed;inset:0;background:rgba(10,26,34,.5);z-index:40}.top{padding:10px 14px}}
+.fx .card{margin-bottom:16px}.fx label{display:block;font-size:12px;color:var(--mut);font-weight:600;margin-bottom:4px}
+.fx .addrow input,.fx .addrow select,.fx .pt input,.fx .pt select,.fx .row3 input,.fx .row3 select,.fx .fhead select{padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);min-width:0}
+.addrow{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-top:12px}.addrow>div{display:flex;flex-direction:column}.addrow .grow{flex:1;min-width:170px}
+.btn.sm{padding:9px 16px;margin:0}
+.pt{width:100%;border-collapse:collapse;font-size:14px}.pt th,.pt td{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.pt th{font-size:12px;color:var(--mut);font-weight:600;white-space:nowrap}.pt .r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pt tr.click{cursor:pointer}.pt tr.click:hover td{background:var(--hov)}.pt tr.sum td{font-weight:700;border-top:2px solid var(--line)}
+.pt small{display:block;color:var(--mut);font-size:11px}.fx .pt input.n{width:104px;text-align:right}.fx .pt td input:not(.n){width:100%}.fx .pt select{max-width:100%}
+.mut{color:var(--mut)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin-top:14px}
+.tile{background:var(--bg);border-radius:12px;padding:10px 12px}.tile span{display:block;font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.tile b{font:700 19px 'Playfair Display',Georgia,serif}#dsum .tile{background:var(--card);box-shadow:var(--sh);padding:12px 14px}
+.tile.main{background:var(--hd);color:var(--hdt)}.tile.main span{color:var(--hdt);opacity:.7}
+.tile.main b.neg{color:#ffb4a2}
+.g2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}.g2>.col{display:block}
+.row3{display:grid;grid-template-columns:90px 1fr 1fr;gap:10px}.row3>div{min-width:0}.row3 input,.row3 select{width:100%}
+.fhead{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.fhead select{min-width:220px;font-size:15px;font-weight:600}.fhead .sp{flex:1}
+.btn.ghost.sm{margin:0}.danger.sm{padding:9px 6px}
+.g2>.col,.wrap,.card{min-width:0}
+@media(max-width:1000px){.g2{grid-template-columns:minmax(0,1fr)}}
 .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:18px 0 14px}
 .kpi{background:var(--card);border-radius:16px;padding:14px 16px;box-shadow:var(--sh);border-left:5px solid var(--line)}
 .kpi.i{border-color:var(--inc)}.kpi.e{border-color:var(--exp)}.kpi.b{border-color:var(--acc)}.kpi.m{border-color:var(--ink)}
@@ -108,14 +142,30 @@ dialog input:not([type=radio]){width:100%;padding:10px 12px;border:1px solid var
 @media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:720px){.topbar .btn.big{width:100%}.grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr);gap:8px}.kpi{padding:10px 12px}.kpi b{font-size:19px}.mt .lab{min-width:112px;max-width:112px;padding:0 6px}.mt .tt{min-width:60px;padding:0 6px}.mt thead th{min-width:54px}.brand h1{font-size:20px}header .wrap{padding:10px 14px}.brand{flex:1}.tools{order:2}.mnav{order:3;width:100%}.mnav select{flex:1}.tabs button{padding:9px 14px}.wrap{padding:0 12px}}
 </style></head><body>
-<header><div class="wrap">
- <div class="brand"><span class="logo">🥘</span><div><h1>Enboga-Bar</h1><small>Ingresos y gastos</small></div></div>
- <div class="mnav"><button class="arrow" id="prev" title="Mes anterior">‹</button><select id="sm"></select><select id="sy"></select><button class="arrow" id="next" title="Mes siguiente">›</button><button class="today-b" id="hoy">Hoy</button></div>
- <div class="tools"><button id="exp" title="Descargar copia de seguridad">⬇ Copia</button><button id="imp" title="Restaurar una copia de seguridad">⬆ Restaurar</button><input id="file" type="file" accept=".json" hidden></div>
-</div></header>
+<div id="app">
+<aside id="side">
+ <div class="sb-brand"><span class="logo">🥘</span><div><h1>Enboga-Bar</h1><small>Gestión del restaurante</small></div></div>
+ <nav>
+  <div class="grp"><button class="gh2" type="button"><span>Cuentas</span><span class="chev">▾</span></button><div class="gi">
+   <button class="nav" data-v="t" title="Tabla diaria"><span class="ic">📋</span><span class="tx">Tabla diaria</span></button>
+   <button class="nav" data-v="r" title="Gráficos"><span class="ic">📊</span><span class="tx">Gráficos</span></button>
+   <button class="nav" data-v="m" title="Movimientos"><span class="ic">🧾</span><span class="tx">Movimientos</span></button>
+  </div></div>
+  <div class="grp"><button class="gh2" type="button"><span>Rentabilidad de platos</span><span class="chev">▾</span></button><div class="gi">
+   <button class="nav" data-v="p" title="Productos"><span class="ic">🧺</span><span class="tx">Productos</span></button>
+   <button class="nav" data-v="d" title="Platos"><span class="ic">🍽️</span><span class="tx">Platos</span></button>
+   <button class="nav" data-v="f" title="Escandallo"><span class="ic">🧮</span><span class="tx">Escandallo</span></button>
+  </div></div>
+ </nav>
+ <div class="sb-foot"><button id="exp" title="Descargar copia de seguridad"><span class="ic">⬇</span><span class="tx">Copia de seguridad</span></button><button id="imp" title="Restaurar una copia de seguridad"><span class="ic">⬆</span><span class="tx">Restaurar copia</span></button><input id="file" type="file" accept=".json" hidden></div>
+</aside>
+<div id="main">
+<header class="top"><button id="burger" title="Mostrar u ocultar menú">☰</button><h2 id="ptitle"></h2><span class="sp"></span>
+ <div class="mnav" id="mnav"><button class="arrow" id="prev" title="Mes anterior">‹</button><select id="sm"></select><select id="sy"></select><button class="arrow" id="next" title="Mes siguiente">›</button><button class="today-b" id="hoy">Hoy</button></div>
+ <button class="btn big" id="nm">＋ Nuevo movimiento</button><button class="btn big" id="ndp" hidden>＋ Nuevo plato</button>
+</header>
 <div class="wrap">
  <section class="kpis" id="kpis"></section>
- <div class="topbar"><div class="tabs"><button class="on" data-v="t">📋 Tabla diaria</button><button data-v="r">📊 Gráficos</button><button data-v="m">🧾 Movimientos</button></div><button class="btn big" id="nm">＋ Nuevo movimiento</button></div>
  <section id="vt">
   <p class="hint">Escribe cada importe en su día (y los comensales en la fila "Clientes") o usa <b>＋ Nuevo movimiento</b>: se suma solo a la tabla. <b>Enter</b> baja a la celda de abajo. Toca el nombre de un concepto para editarlo.</p>
   <div id="tbl"></div>
@@ -133,7 +183,43 @@ dialog input:not([type=radio]){width:100%;padding:10px 12px;border:1px solid var
   <div class="filters"><select id="fp"><option value="mes">Mes seleccionado</option><option value="todo">Todo el historial</option></select><select id="ft"><option value="">Ingresos y gastos</option><option value="ingreso">Solo ingresos</option><option value="gasto">Solo gastos</option></select><select id="fn"><option value="">Fijos y variables</option><option value="fijo">Solo fijos</option><option value="variable">Solo variables</option></select><input type="search" id="fq" placeholder="Buscar por categoría, nota, importe…"></div>
   <div class="msum" id="msum"></div><div class="scroll" id="mlist"></div>
  </div></section>
+ <section id="vp" class="fx" hidden>
+  <div class="card"><h2>Productos y precios de compra</h2><p class="hint" style="padding:0">Registra todo lo que compras con su precio. Si un precio cambia, el coste de todos los platos que llevan ese producto se actualiza solo.</p>
+   <form class="addrow" id="paf"><div class="grow"><label>Producto</label><input id="pan" placeholder="Ej: Gamba roja, Arroz bomba, Aceite de oliva" autocomplete="off"></div>
+   <div><label>Se compra por</label><select id="pau"><option value="kg">Kilo (kg)</option><option value="l">Litro (l)</option><option value="ud">Unidad (ud)</option></select></div>
+   <div><label>Precio de compra (€)</label><input id="pap" type="number" step="0.01" min="0" placeholder="0,00" style="width:130px"></div>
+   <button class="btn sm" id="paadd">＋ Añadir producto</button></form></div>
+  <div class="card"><div class="filters"><input type="search" id="pq" placeholder="Buscar producto…"><span class="msum" id="pcount" style="align-self:center;margin:0"></span></div><div class="scroll" id="ptab"></div></div>
+ </section>
+ <section id="vd" class="fx" hidden>
+  <div class="tiles" id="dsum" style="margin:0 0 16px"></div>
+  <div class="card"><div class="filters"><span class="mut" style="align-self:center">Ordenar por</span><select id="dsort"><option value="name">Nombre</option><option value="mgp">Margen % (mayor primero)</option><option value="mg">Margen € por plato</option><option value="ben">Beneficio semanal</option><option value="cost">Coste (mayor primero)</option><option value="fc">Food cost % (mayor primero)</option></select></div><div class="scroll" id="dtab"></div></div>
+ </section>
+ <section id="vf" class="fx" hidden>
+  <div class="card fhead" id="fhead"><select id="fsel"></select><span class="mut" id="finfo"></span><span class="sp"></span><button class="btn ghost sm" id="fedit">✎ Editar datos</button><button class="btn ghost sm" id="fnew">＋ Nuevo plato</button><button class="danger sm" id="fdel">Eliminar plato</button></div>
+  <div class="card empty big" id="fempty" hidden><h3>Aún no hay platos</h3><p>Crea un plato para calcular su coste, su precio de venta y su margen.</p><button class="btn" id="fnew2">＋ Crear mi primer plato</button></div>
+  <div class="g2" id="fbody">
+   <div class="col">
+    <div class="card"><h2>Ingredientes</h2><div class="scroll"><table class="pt" id="ft1"></table></div>
+     <div id="fnop" class="hint" hidden style="padding:0">Primero registra tus productos en <a href="#" data-go="p">🧺 Productos</a>.</div>
+     <form class="addrow" id="faf"><div class="grow"><label>Producto</label><select id="fap" style="width:100%"></select></div><div><label>Cantidad</label><input id="faq" type="number" step="any" min="0" placeholder="0" style="width:100px"></div><div><label>Unidad</label><select id="fau"></select></div><button class="btn sm">＋ Añadir</button></form></div>
+    <div class="card"><h2>Otros costes del plato</h2><p class="hint" style="padding:0">Cualquier coste extra de este plato: envase, pan, guarnición fija, parte de mano de obra…</p><div class="scroll"><table class="pt" id="ft2"></table></div>
+     <form class="addrow" id="fxf"><div class="grow"><label>Concepto</label><input id="fxn" placeholder="Ej: Envase, pan, mano de obra" autocomplete="off" style="width:100%"></div><div><label>Importe (€)</label><input id="fxa" type="number" step="0.01" min="0" placeholder="0,00" style="width:110px"></div><button class="btn sm">＋ Añadir</button></form></div>
+   </div>
+   <div class="col">
+    <div class="card"><h2>Precio de venta y margen</h2>
+     <div class="row3"><div><label>IVA</label><select id="fiva"><option value="0">0 %</option><option value="4">4 %</option><option value="10">10 %</option><option value="21">21 %</option></select></div><div><label>Precio con IVA (€)</label><input id="fpvp" data-k="fpvp" type="number" step="0.01" min="0"></div><div><label>Precio sin IVA (€)</label><input id="fnet" data-k="fnet" type="number" step="0.01" min="0"></div></div>
+     <div class="tiles" id="fres"></div></div>
+    <div class="card"><h2>Ventas semanales</h2><p class="hint" style="padding:0">Registra cada semana cuántas unidades vendes. Si repites una semana, se actualiza.</p>
+     <form class="addrow" id="fwf"><div><label>Un día cualquiera de la semana</label><input id="fwd" type="date" required></div><div><label>Unidades</label><input id="fwq" type="number" step="1" min="0" required placeholder="0" style="width:100px"></div><button class="btn sm">Registrar semana</button></form>
+     <div class="tiles" id="fws"></div><div id="fwc" style="margin-top:12px"></div><div class="scroll" id="fwl" style="margin-top:8px"></div></div>
+   </div>
+  </div>
+ </section>
 </div>
+</div>
+</div>
+<div id="ov"></div>
 <dialog id="dlg"><form id="df">
  <h3 id="dt"></h3>
  <div id="dfx">
@@ -156,6 +242,13 @@ dialog input:not([type=radio]){width:100%;padding:10px 12px;border:1px solid var
  <datalist id="cats3"></datalist><datalist id="subs3"></datalist>
  <div class="acts"><button type="button" class="danger" id="mdel" hidden>Eliminar</button><span class="sp"></span><button type="button" class="btn ghost" id="mcan">Cancelar</button><button class="btn" id="mok">Añadir a la tabla</button></div>
 </form></dialog>
+<dialog id="dlg3"><form id="d3f">
+ <h3 id="d3t">Nuevo plato</h3>
+ <label>Nombre del plato</label><input type="text" id="dn" required autocomplete="off" placeholder="Ej: Fideuà campeona">
+ <label>Categoría <small>(opcional)</small></label><input type="text" id="dcat" list="dcats" autocomplete="off" placeholder="Ej: Arroces, Entrantes, Postres"><datalist id="dcats"></datalist>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>IVA</label><select id="dva" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)"><option value="0">0 %</option><option value="4">4 %</option><option value="10" selected>10 %</option><option value="21">21 %</option></select></div><div><label>Precio con IVA (€) <small>(opcional)</small></label><input type="number" id="dpvp" step="0.01" min="0" placeholder="0,00"></div></div>
+ <div class="acts"><span class="sp"></span><button type="button" class="btn ghost" id="d3c">Cancelar</button><button class="btn" id="d3ok">Guardar</button></div>
+</form></dialog>
 <div id="toast" hidden></div>
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -166,15 +259,17 @@ const EJ=[['ingreso','variable','Ventas','Sala'],['ingreso','variable','Ventas',
 const eur=n=>n.toLocaleString('es-ES',{style:'currency',currency:'EUR'}),num=n=>n.toLocaleString('es-ES',{maximumFractionDigits:2}),pad=n=>String(n).padStart(2,'0');
 const Z=n=>Array(n).fill(0),add=(a,b)=>a.map((x,i)=>x+b[i]),tot=a=>a.reduce((t,x)=>t+x,0),sum=a=>a.reduce((t,x)=>t+x.imp,0);
 const rk=x=>[x.tipo,x.nat,x.cat,x.sub||''].join('|');
-let lastMv={tipo:'ingreso',nat:'variable'};const now0=new Date();let data=[],rows=[],cov={},cur={y:now0.getFullYear(),m:now0.getMonth()},tab='t',view=[],ed=null,scrolled='';
+let lastMv={tipo:'ingreso',nat:'variable'};const now0=new Date();let prods=[],dishes=[],curDish="",data=[],rows=[],cov={},cur={y:now0.getFullYear(),m:now0.getMonth()},tab='t',view=[],ed=null,scrolled='';
 const ym=(c=cur)=>c.y+'-'+pad(c.m+1),nd=()=>new Date(cur.y,cur.m+1,0).getDate();
 /* ---------- almacenamiento (en el navegador) ---------- */
 const saveData=()=>{try{localStorage.setItem('enboga',JSON.stringify(data))}catch(e){}};
 const saveCov=()=>{try{localStorage.setItem('enboga_cov',JSON.stringify(cov))}catch(e){}};
+const saveProds=()=>{try{localStorage.setItem('enboga_prod',JSON.stringify(prods))}catch(e){}};
+const saveDishes=()=>{try{localStorage.setItem('enboga_dish',JSON.stringify(dishes))}catch(e){}};
 const saveRows=()=>{try{localStorage.setItem('enboga_rows',JSON.stringify(rows))}catch(e){}};
 function ensureRows(){data.forEach(x=>{x.sub=x.sub||'';if(!rows.some(q=>rk(q)===rk(x)))rows.push({tipo:x.tipo,nat:x.nat,cat:x.cat,sub:x.sub})});saveRows()}
 function put(arr,del=[]){del=new Set(del);data=data.filter(x=>!del.has(x.id));arr.forEach(m=>{const i=data.findIndex(x=>x.id===m.id);i<0?data.push(m):data[i]=m});saveData()}
-function load(){try{data=JSON.parse(localStorage.getItem('enboga')||'[]')}catch(e){data=[]}try{rows=JSON.parse(localStorage.getItem('enboga_rows')||'[]')}catch(e){rows=[]}try{cov=JSON.parse(localStorage.getItem('enboga_cov')||'{}')}catch(e){cov={}}ensureRows()}
+function load(){try{data=JSON.parse(localStorage.getItem('enboga')||'[]')}catch(e){data=[]}try{rows=JSON.parse(localStorage.getItem('enboga_rows')||'[]')}catch(e){rows=[]}try{cov=JSON.parse(localStorage.getItem('enboga_cov')||'{}')}catch(e){cov={}}try{prods=JSON.parse(localStorage.getItem('enboga_prod')||'[]')}catch(e){prods=[]}try{dishes=JSON.parse(localStorage.getItem('enboga_dish')||'[]')}catch(e){dishes=[]}dishes.forEach(d=>{d.lines=d.lines||[];d.extras=d.extras||[];d.sales=d.sales||{}});curDish=dishes[0]?dishes[0].id:'';ensureRows()}
 function setCov(d,val){const k=ym()+'-'+pad(d+1);if(val>0)cov[k]=Math.round(val);else delete cov[k];saveCov()}
 /* ---------- edición ---------- */
 function setCell(r,d,val){const ymd=ym()+'-'+pad(d+1),ex=data.filter(x=>rk(x)===rk(r)&&x.fec===ymd);
@@ -228,7 +323,7 @@ function renderTable(){
  const ti=add(G.ingresofijo,G.ingresovariable),tg=add(G.gastofijo,G.gastovariable),bl=ti.map((x,i)=>x-tg[i]);
  h+=`<tr class="band"><td class="lab">Resumen del mes</td><td colspan="${n+1}"></td></tr><tr class="tot"><td class="lab pos">Total ingresos</td>${ro(ti)}<td class="tt pos">${num(tot(ti))}</td></tr><tr class="tot"><td class="lab neg">Total gastos</td>${ro(tg)}<td class="tt neg">${num(tot(tg))}</td></tr><tr class="tot fin"><td class="lab">Balance</td>${ro(bl,1)}<td class="tt ${tot(bl)>=0?'pos':'neg'}">${num(tot(bl))}</td></tr></tbody></table>`;
  $('#tbl').innerHTML=h;
- if(isCur&&scrolled!==ym()){scrolled=ym();const th=document.querySelector('th.today');if(th)$('#tbl').scrollLeft=Math.max(0,th.offsetLeft-300)}}
+ if(isCur&&tab==='t'&&scrolled!==ym()){scrolled=ym();const th=document.querySelector('th.today');if(th)$('#tbl').scrollLeft=Math.max(0,th.offsetLeft-300)}}
 $('#tbl').onchange=e=>{const el=e.target,a=el.dataset.a;if(a==='cell')setCell(view[+el.dataset.i],+el.dataset.d,parseFloat(el.value));else if(a==='cov')setCov(+el.dataset.d,parseFloat(el.value));else return;setTimeout(render,0)};
 $('#tbl').onfocusin=e=>{if(e.target.matches('input.cell'))e.target.select()};
 $('#tbl').onkeydown=e=>{const el=e.target;if(!['cell','cov'].includes(el.dataset.a)||!['Enter','ArrowDown','ArrowUp'].includes(e.key))return;e.preventDefault();
@@ -285,12 +380,23 @@ function charts(){const n=nd(),md=mdata(),I=Z(n),G=Z(n);md.forEach(x=>{(x.tipo==
 /* ---------- cabecera, pestañas, render ---------- */
 function head(){$('#sm').innerHTML=MES.map((m,i)=>`<option value="${i}">${m}</option>`).join('');$('#sm').value=cur.m;
  const ys=data.map(x=>+x.fec.slice(0,4)).concat([cur.y,now0.getFullYear()]),a=Math.min(...ys)-1,b=Math.max(...ys)+1;let o='';for(let y=a;y<=b;y++)o+=`<option>${y}</option>`;$('#sy').innerHTML=o;$('#sy').value=cur.y}
-function render0(){head();kpis();renderTable();$('#vt').hidden=tab!=='t';$('#vr').hidden=tab!=='r';$('#vm').hidden=tab!=='m';if(tab==='r')charts();if(tab==='m')renderMov()}
+const TIT={t:'Tabla diaria',r:'Gráficos',m:'Movimientos',p:'Productos y precios de compra',d:'Platos y rentabilidad',f:'Escandallo del plato'};
+function render0(){const acc=['t','r','m'].includes(tab);
+ if(acc){head();kpis();if(tab==='t')renderTable()}
+ ['t','r','m','p','d','f'].forEach(v=>$('#v'+v).hidden=tab!==v);
+ $('#kpis').hidden=!acc;$('#mnav').hidden=!acc;$('#nm').hidden=!acc;$('#ndp').hidden=tab!=='d';$('#ptitle').textContent=TIT[tab];
+ document.querySelectorAll('#side .nav').forEach(x=>x.classList.toggle('on',x.dataset.v===tab));
+ if(tab==='r')charts();if(tab==='m')renderMov();if(tab==='p')renderProds();if(tab==='d')renderDishes();if(tab==='f')renderFicha()}
 function render(){const f=document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.k;render0();if(f){const n=document.querySelector('[data-k="'+f+'"]');if(n){n.focus();try{n.select()}catch(e){}}}}
 function shift(d){cur.m+=d;if(cur.m<0){cur.m=11;cur.y--}if(cur.m>11){cur.m=0;cur.y++}render()}
 $('#prev').onclick=()=>shift(-1);$('#next').onclick=()=>shift(1);$('#hoy').onclick=()=>{cur={y:now0.getFullYear(),m:now0.getMonth()};scrolled='';render()};
 $('#sm').onchange=e=>{cur.m=+e.target.value;render()};$('#sy').onchange=e=>{cur.y=+e.target.value;render()};
-document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{tab=b.dataset.v;document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));render()});
+document.querySelectorAll('#side .nav').forEach(b=>b.onclick=()=>{tab=b.dataset.v;document.body.classList.remove('sbo');render();scrollTo(0,0)});
+document.querySelectorAll('.gh2').forEach(b=>b.onclick=()=>b.parentElement.classList.toggle('closed'));
+$('#burger').onclick=()=>{if(innerWidth<=900)document.body.classList.toggle('sbo');else{document.body.classList.toggle('sbc');try{localStorage.setItem('enboga_sbc',document.body.classList.contains('sbc')?'1':'')}catch(e){}}};
+$('#ov').onclick=()=>document.body.classList.remove('sbo');
+try{if(localStorage.getItem('enboga_sbc'))document.body.classList.add('sbc')}catch(e){}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){e.preventDefault();tab=g.dataset.go;render();scrollTo(0,0)}});
 
 /* ---------- nuevo movimiento ---------- */
 function mvHints(){const t=radio('mtipo'),n=radio('mnat'),c=$('#mc').value.trim(),rr=rows.filter(r=>r.tipo===t&&r.nat===n);
@@ -310,7 +416,7 @@ $('#mfm').onsubmit=e=>{e.preventDefault();const c=$('#mc').value.trim(),imp=Math
  if(!rows.some(q=>rk(q)===rk(r))){rows.push(r);saveRows()}
  if(mvEd){put([{...mvEd,...r,con,imp,fec}]);$('#dlg2').close();render();toast('Movimiento actualizado');return}
  lastMv={tipo:r.tipo,nat:r.nat};put([{id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),...r,con,imp,fec}]);
- cur={y:+fec.slice(0,4),m:+fec.slice(5,7)-1};tab='t';document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x.dataset.v==='t'));
+ cur={y:+fec.slice(0,4),m:+fec.slice(5,7)-1};tab='t';
  $('#dlg2').close();render();
  const i=view.findIndex(q=>rk(q)===rk(r)),d=+fec.slice(8,10)-1,cell=document.querySelector(`[data-k="x${i}-${d}"]`);
  if(cell){cell.scrollIntoView({block:'center',inline:'center'});const td=cell.parentElement;td.classList.remove('flash');void td.offsetWidth;td.classList.add('flash')}
@@ -324,11 +430,93 @@ function renderMov(){const q=$('#fq').value.trim().toLowerCase(),todo=$('#fp').v
 ['#fp','#ft','#fn'].forEach(s=>$(s).onchange=renderMov);$('#fq').oninput=renderMov;
 $('#mlist').onclick=e=>{const b=e.target.closest('[data-id]');if(!b)return;const m=data.find(x=>x.id===b.dataset.id);if(!m)return;
  if(b.dataset.a==='medit')openMv(m);else if(confirm('¿Eliminar este movimiento de '+eur(m.imp)+' ('+m.cat+(m.sub?' › '+m.sub:'')+', '+m.fec.split('-').reverse().join('/')+')?')){put([],[m.id]);render();toast('Movimiento eliminado')}};
+/* ---------- rentabilidad de platos ---------- */
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const UN={kg:[['g',.001],['kg',1]],l:[['ml',.001],['cl',.01],['l',1]],ud:[['ud',1]]},UNN={kg:'€/kg',l:'€/litro',ud:'€/ud'},PU=[['kg','Kilo (kg)'],['l','Litro (l)'],['ud','Unidad (ud)']];
+const ymdF=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const monday=s=>{const d=new Date(s+'T00:00:00');d.setDate(d.getDate()-((d.getDay()+6)%7));return ymdF(d)};
+const weekLbl=k=>{const a=new Date(k+'T00:00:00'),b=new Date(a);b.setDate(a.getDate()+6);return pad(a.getDate())+'/'+pad(a.getMonth()+1)+' – '+pad(b.getDate())+'/'+pad(b.getMonth()+1)+'/'+b.getFullYear()};
+const unitOpts=(pu,sel)=>UN[pu].map(([u])=>`<option${u===sel?' selected':''}>${u}</option>`).join('');
+const prodOpts=(sel,ph)=>(ph?'<option value="">Elegir producto…</option>':'')+[...prods].sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<option value="${p.id}"${p.id===sel?' selected':''}>${esc(p.name)}</option>`).join('');
+const lineCost=l=>{const p=prods.find(x=>x.id===l.pid);if(!p)return 0;const u=UN[p.unit].find(x=>x[0]===l.unit);return(+l.qty||0)*(u?u[1]:1)*p.price};
+const curD=()=>dishes.find(x=>x.id===curDish),pc=v=>v==null?'—':(Math.round(v*10)/10).toLocaleString('es-ES')+' %';
+function calc(d){const ing=d.lines.reduce((t,l)=>t+lineCost(l),0),ext=d.extras.reduce((t,x)=>t+(+x.amt||0),0),cost=ing+ext,iva=d.iva==null?10:+d.iva,pvp=+d.pvp||0,net=pvp/(1+iva/100),ok=net>0,wk=Object.entries(d.sales||{}).sort((a,b)=>a[0].localeCompare(b[0])),v=wk.map(x=>x[1]),l4=v.slice(-4);
+ return{ing,ext,cost,iva,pvp,net,ok,mg:ok?net-cost:null,mgp:ok?(net-cost)/net*100:null,fc:ok?cost/net*100:null,wk,n:v.length,avg:v.length?tot(v)/v.length:0,avg4:l4.length?tot(l4)/l4.length:0}}
+/* productos */
+function renderProds(){const q=$('#pq').value.trim().toLowerCase(),used=id=>dishes.filter(d=>d.lines.some(l=>l.pid===id)).length,a=[...prods].filter(p=>!q||p.name.toLowerCase().includes(q)).sort((x,y)=>x.name.localeCompare(y.name));
+ $('#pcount').textContent=prods.length+(prods.length===1?' producto':' productos');
+ $('#ptab').innerHTML=a.length?'<table class="pt"><tr><th>Producto</th><th>Se compra por</th><th>Precio de compra</th><th>En platos</th><th></th></tr>'+a.map(p=>`<tr><td><input data-k="pn-${p.id}" data-a="pname" data-id="${p.id}" value="${esc(p.name)}"></td><td><select data-a="punit" data-id="${p.id}">${PU.map(([v,t])=>`<option value="${v}"${p.unit===v?' selected':''}>${t}</option>`).join('')}</select></td><td><input class="n" type="number" step="0.01" min="0" data-k="pp-${p.id}" data-a="pprice" data-id="${p.id}" value="${p.price}"> <span class="mut">${UNN[p.unit]}</span></td><td>${used(p.id)||'—'}</td><td><button class="ib" data-a="pdel" data-id="${p.id}" title="Eliminar">✕</button></td></tr>`).join('')+'</table>':'<div class="empty">'+(prods.length?'Ningún producto coincide con la búsqueda.':'Aún no hay productos. Añade el primero arriba.')+'</div>'}
+$('#pq').oninput=renderProds;
+$('#paf').onsubmit=e=>{e.preventDefault();const n=$('#pan').value.trim(),pr=parseFloat($('#pap').value);if(!n||!(pr>=0))return;
+ if(prods.some(p=>p.name.toLowerCase()===n.toLowerCase())){toast('Ya existe un producto con ese nombre');return}
+ prods.push({id:uid('p'),name:n,unit:$('#pau').value,price:pr});saveProds();$('#pan').value='';$('#pap').value='';render();$('#pan').focus();toast('Producto añadido')};
+$('#vp').onchange=e=>{const el=e.target,a=el.dataset.a,p=prods.find(x=>x.id===el.dataset.id);if(!p)return;
+ if(a==='pname'){const v=el.value.trim();if(v)p.name=v}
+ else if(a==='punit'){p.unit=el.value;dishes.forEach(d=>d.lines.forEach(l=>{if(l.pid===p.id&&!UN[p.unit].some(u=>u[0]===l.unit))l.unit=UN[p.unit][0][0]}));saveDishes()}
+ else if(a==='pprice'){const v=parseFloat(el.value);p.price=v>=0?v:0}
+ else return;saveProds();setTimeout(render,0)};
+$('#vp').onclick=e=>{const b=e.target.closest('[data-a="pdel"]');if(!b)return;const p=prods.find(x=>x.id===b.dataset.id),n=dishes.filter(d=>d.lines.some(l=>l.pid===p.id)).length;
+ if(!confirm('¿Eliminar "'+p.name+'"?'+(n?' Está en '+n+' plato(s) y se quitará de sus ingredientes.':'')))return;
+ prods=prods.filter(x=>x.id!==p.id);dishes.forEach(d=>d.lines=d.lines.filter(l=>l.pid!==p.id));saveProds();saveDishes();render()};
+/* platos */
+let dEd=null;
+function openDish(d){dEd=d||null;$('#d3t').textContent=d?'Editar plato':'Nuevo plato';$('#dn').value=d?d.name:'';$('#dcat').value=d?d.cat||'':'';$('#dva').value=d&&d.iva!=null?d.iva:10;$('#dpvp').value=d&&d.pvp?d.pvp:'';
+ $('#dcats').innerHTML=[...new Set(dishes.map(x=>x.cat).filter(Boolean))].map(c=>`<option value="${esc(c)}">`).join('');$('#dlg3').showModal();$('#dn').focus()}
+$('#d3c').onclick=()=>$('#dlg3').close();$('#ndp').onclick=()=>openDish();$('#fnew').onclick=()=>openDish();$('#fnew2').onclick=()=>openDish();$('#fedit').onclick=()=>openDish(curD());$('#fdel').onclick=()=>delDish(curDish);
+$('#d3f').onsubmit=e=>{e.preventDefault();const n=$('#dn').value.trim();if(!n)return;const o={name:n,cat:$('#dcat').value.trim(),iva:+$('#dva').value,pvp:parseFloat($('#dpvp').value)||0};
+ if(dEd)Object.assign(dEd,o);else{const d={id:uid('d'),...o,lines:[],extras:[],sales:{}};dishes.push(d);curDish=d.id;tab='f'}
+ saveDishes();$('#dlg3').close();render();scrollTo(0,0)};
+function delDish(id){const d=dishes.find(x=>x.id===id);if(!d||!confirm('¿Eliminar el plato "'+d.name+'" con su escandallo y sus ventas semanales?'))return;dishes=dishes.filter(x=>x.id!==id);if(curDish===id)curDish=dishes[0]?dishes[0].id:'';saveDishes();render()}
+function renderDishes(){const L=dishes.map(d=>({d,c:calc(d)})),k=$('#dsort').value,v=x=>({mgp:x.c.mgp,mg:x.c.mg,ben:x.c.ok&&x.c.n?x.c.mg*x.c.avg:null,cost:x.c.cost,fc:x.c.fc})[k];
+ L.sort((a,b)=>k==='name'?a.d.name.localeCompare(b.d.name):((v(b)==null?-1e12:v(b))-(v(a)==null?-1e12:v(a)))||a.d.name.localeCompare(b.d.name));
+ const wp=L.filter(x=>x.c.ok),best=[...wp].sort((a,b)=>b.c.mgp-a.c.mgp)[0],ben=tot(L.map(x=>x.c.ok?x.c.mg*x.c.avg:0));
+ $('#dsum').innerHTML=`<div class="tile"><span>Platos</span><b>${L.length}</b></div><div class="tile"><span>Margen medio</span><b>${wp.length?pc(tot(wp.map(x=>x.c.mgp))/wp.length):'—'}</b></div><div class="tile"><span>Beneficio semanal estimado</span><b>${eur(ben)}</b></div><div class="tile"><span>Mayor margen %</span><b style="font-size:15px">${best?esc(best.d.name):'—'}</b></div>`;
+ $('#dtab').innerHTML=L.length?'<table class="pt"><tr><th>Plato</th><th class="r">Coste total</th><th class="r">Precio con IVA</th><th class="r">Precio sin IVA</th><th class="r">Margen €</th><th class="r">Margen %</th><th class="r">Food cost</th><th class="r">Uds/semana</th><th class="r">Beneficio/sem.</th><th></th></tr>'+L.map(({d,c})=>`<tr class="click" data-a="open" data-id="${d.id}"><td><b>${esc(d.name)}</b>${d.cat?`<small>${esc(d.cat)}</small>`:''}</td><td class="r">${eur(c.cost)}</td><td class="r">${c.pvp?eur(c.pvp):'—'}</td><td class="r">${c.ok?eur(c.net):'—'}</td><td class="r ${c.ok&&c.mg<0?'neg':''}">${c.ok?eur(c.mg):'—'}</td><td class="r"><b class="${c.ok&&c.mg<0?'neg':''}">${pc(c.mgp)}</b></td><td class="r">${pc(c.fc)}</td><td class="r">${c.n?num(Math.round(c.avg*10)/10):'—'}</td><td class="r">${c.ok&&c.n?eur(c.mg*c.avg):'—'}</td><td style="white-space:nowrap"><button class="ib" data-a="dedit" data-id="${d.id}" title="Editar datos">✎</button> <button class="ib" data-a="ddel" data-id="${d.id}" title="Eliminar">✕</button></td></tr>`).join('')+'</table>':'<div class="empty big"><h3>Aún no hay platos</h3><p>Crea tu primer plato y calcula su rentabilidad.</p><button class="btn" data-a="dnew">＋ Nuevo plato</button></div>'}
+$('#dsort').onchange=renderDishes;
+$('#vd').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const id=b.dataset.id,a=b.dataset.a;
+ if(a==='ddel')delDish(id);else if(a==='dedit')openDish(dishes.find(x=>x.id===id));else if(a==='dnew')openDish();else if(a==='open'){curDish=id;tab='f';render();scrollTo(0,0)}};
+/* escandallo */
+function wkChart(c,el){const w=c.wk.slice(-12);if(!w.length){el.innerHTML='';return}
+ const mx=Math.max(...w.map(x=>x[1]),c.avg,1),W=620,H=170,B=130,S=100,bw=W/w.length;let s=`<svg viewBox="0 0 ${W} ${H}" class="ch"><line x1="0" y1="${B}" x2="${W}" y2="${B}" stroke="var(--line)"/>`;
+ w.forEach(([k,v],i)=>{const h=v/mx*S,x=i*bw;s+=`<g><title>${weekLbl(k)}: ${v} uds</title><rect x="${x+bw*.15}" y="${B-h}" width="${bw*.7}" height="${h}" rx="3" fill="var(--acc)"/><text x="${x+bw/2}" y="${B-h-4}" font-size="10" text-anchor="middle" fill="var(--ink)">${v}</text><text x="${x+bw/2}" y="${B+15}" font-size="9" text-anchor="middle" fill="var(--mut)">${k.slice(8)}/${k.slice(5,7)}</text></g>`});
+ const ya=B-c.avg/mx*S;el.innerHTML=s+`<line x1="0" y1="${ya}" x2="${W}" y2="${ya}" stroke="var(--ink)" stroke-dasharray="4 4"/><text x="${W-2}" y="${ya-4}" font-size="10" text-anchor="end" fill="var(--ink)">media ${num(Math.round(c.avg*10)/10)}</text></svg>`}
+function renderFicha(){const d=curD()||dishes[0];$('#fsel').innerHTML=dishes.map(x=>`<option value="${x.id}"${d&&x.id===d.id?' selected':''}>${esc(x.name)}</option>`).join('');
+ ['#fsel','#fedit','#fdel','#finfo'].forEach(s=>$(s).hidden=!d);$('#fnew').hidden=!d;$('#fempty').hidden=!!d;$('#fbody').hidden=!d;if(!d)return;curDish=d.id;const c=calc(d);
+ $('#finfo').textContent=(d.cat?d.cat+' · ':'')+'IVA '+c.iva+' %';
+ const cur=$('#fap').value;$('#fap').innerHTML=prodOpts('',1);$('#fap').value=cur;$('#fnop').hidden=prods.length>0;
+ $('#ft1').innerHTML=d.lines.length?'<tr><th>Producto</th><th>Cantidad</th><th>Unidad</th><th class="r">Coste</th><th></th></tr>'+d.lines.map((l,i)=>{const p=prods.find(x=>x.id===l.pid);return p?`<tr><td><select data-a="lp" data-i="${i}">${prodOpts(l.pid)}</select><small>${eur(p.price)} ${UNN[p.unit].slice(1)}</small></td><td><input class="n" type="number" step="any" min="0" data-k="lq-${i}" data-a="lq" data-i="${i}" value="${l.qty}"></td><td><select data-a="lu" data-i="${i}">${unitOpts(p.unit,l.unit)}</select></td><td class="r">${eur(lineCost(l))}</td><td><button class="ib" data-a="ldel" data-i="${i}" title="Quitar">✕</button></td></tr>`:`<tr><td colspan="3" class="neg">Producto eliminado</td><td class="r">0,00 €</td><td><button class="ib" data-a="ldel" data-i="${i}">✕</button></td></tr>`}).join('')+`<tr class="sum"><td colspan="3">Total ingredientes</td><td class="r">${eur(c.ing)}</td><td></td></tr>`:'<tr><td class="mut">Aún no hay ingredientes. Añade el primero abajo.</td></tr>';
+ $('#ft2').innerHTML=d.extras.length?d.extras.map((x,i)=>`<tr><td><input data-k="xn-${i}" data-a="xn" data-i="${i}" value="${esc(x.name)}"></td><td class="r"><input class="n" type="number" step="0.01" min="0" data-k="xa-${i}" data-a="xa" data-i="${i}" value="${x.amt}"> €</td><td><button class="ib" data-a="xdel" data-i="${i}" title="Quitar">✕</button></td></tr>`).join('')+`<tr class="sum"><td>Total otros costes</td><td class="r">${eur(c.ext)}</td><td></td></tr>`:'<tr><td class="mut">Sin otros costes.</td></tr>';
+ const set=(el,v)=>{if(document.activeElement!==el)el.value=v};set($('#fiva'),c.iva);set($('#fpvp'),d.pvp||'');set($('#fnet'),c.ok?Math.round(c.net*100)/100:'');
+ const T=(l,v,m,neg)=>`<div class="tile${m?' main':''}"><span>${l}</span><b class="${neg?'neg':''}">${v}</b></div>`;
+ $('#fres').innerHTML=T('Coste ingredientes',eur(c.ing))+T('Otros costes',eur(c.ext))+T('Coste total',eur(c.cost),1)+T('Importe del IVA',c.pvp?eur(c.pvp-c.net):'—')+T('Margen €',c.ok?eur(c.mg):'—',1,c.ok&&c.mg<0)+T('Margen %',pc(c.mgp),1,c.ok&&c.mg<0)+T('Food cost',pc(c.fc))+T('Coste / precio con IVA',c.pvp?pc(c.cost/c.pvp*100):'—')
+  +(c.ok?'':'<div class="hint" style="grid-column:1/-1;margin:0">Introduce el precio de venta para ver el margen. El margen se calcula sobre el precio sin IVA.</div>');
+ $('#fws').innerHTML=T('Media semanal',c.n?num(Math.round(c.avg*10)/10)+' uds':'—')+T('Media últimas 4 sem.',c.n?num(Math.round(c.avg4*10)/10)+' uds':'—')+T('Ventas/sem. sin IVA',c.ok&&c.n?eur(c.net*c.avg):'—')+T('Beneficio semanal',c.ok&&c.n?eur(c.mg*c.avg):'—',1,c.ok&&c.n&&c.mg<0);
+ wkChart(c,$('#fwc'));
+ $('#fwl').innerHTML=c.n?'<table class="pt"><tr><th>Semana</th><th>Unidades</th><th></th></tr>'+[...c.wk].reverse().map(([k,v])=>`<tr><td>${weekLbl(k)}</td><td><input class="n" type="number" step="1" min="0" data-k="wq-${k}" data-a="wq" data-w="${k}" value="${v}"></td><td><button class="ib" data-a="wdel" data-w="${k}" title="Quitar semana">✕</button></td></tr>`).join('')+'</table>':'<div class="empty">Aún no has registrado ninguna semana.</div>'}
+$('#fsel').onchange=e=>{curDish=e.target.value;$('#fap').value='';$('#fau').innerHTML='';render()};
+$('#fap').onchange=()=>{const p=prods.find(x=>x.id===$('#fap').value);$('#fau').innerHTML=p?unitOpts(p.unit,UN[p.unit][0][0]):''};
+$('#faf').onsubmit=e=>{e.preventDefault();const d=curD(),p=prods.find(x=>x.id===$('#fap').value),q=parseFloat($('#faq').value);if(!d||!p||!(q>0))return;d.lines.push({pid:p.id,qty:q,unit:$('#fau').value});saveDishes();$('#faq').value='';$('#fap').value='';$('#fau').innerHTML='';render();$('#fap').focus()};
+$('#fxf').onsubmit=e=>{e.preventDefault();const d=curD(),n=$('#fxn').value.trim(),a=parseFloat($('#fxa').value);if(!d||!n||!(a>=0))return;d.extras.push({name:n,amt:a});saveDishes();$('#fxn').value='';$('#fxa').value='';render();$('#fxn').focus()};
+$('#fwd').value=ymdF(new Date());
+$('#fwf').onsubmit=e=>{e.preventDefault();const d=curD(),dt=$('#fwd').value,q=parseInt($('#fwq').value);if(!d||!dt||!(q>=0))return;const k=monday(dt);d.sales[k]=q;saveDishes();$('#fwq').value='';render();toast('Semana '+weekLbl(k)+': '+q+' uds');$('#fwq').focus()};
+$('#fiva').onchange=e=>{const d=curD();if(!d)return;d.iva=+e.target.value;saveDishes();render()};
+$('#fpvp').onchange=e=>{const d=curD();if(!d)return;d.pvp=Math.max(0,parseFloat(e.target.value)||0);saveDishes();setTimeout(render,0)};
+$('#fnet').onchange=e=>{const d=curD();if(!d)return;const v=Math.max(0,parseFloat(e.target.value)||0),iva=d.iva==null?10:+d.iva;d.pvp=Math.round(v*(1+iva/100)*100)/100;saveDishes();setTimeout(render,0)};
+$('#vf').onchange=e=>{const el=e.target,a=el.dataset.a,d=curD();if(!d||!a)return;const i=+el.dataset.i;
+ if(a==='lp'){const l=d.lines[i],p=prods.find(x=>x.id===el.value);l.pid=el.value;if(p&&!UN[p.unit].some(u=>u[0]===l.unit))l.unit=UN[p.unit][0][0]}
+ else if(a==='lq')d.lines[i].qty=Math.max(0,parseFloat(el.value)||0);
+ else if(a==='lu')d.lines[i].unit=el.value;
+ else if(a==='xn')d.extras[i].name=el.value.trim()||d.extras[i].name;
+ else if(a==='xa')d.extras[i].amt=Math.max(0,parseFloat(el.value)||0);
+ else if(a==='wq'){const v=parseInt(el.value);if(v>=0)d.sales[el.dataset.w]=v;else delete d.sales[el.dataset.w]}
+ else return;saveDishes();setTimeout(render,0)};
+$('#vf').onclick=e=>{const b=e.target.closest('[data-a]'),d=curD();if(!b||!d)return;const a=b.dataset.a,i=+b.dataset.i;
+ if(a==='ldel')d.lines.splice(i,1);else if(a==='xdel')d.extras.splice(i,1);else if(a==='wdel')delete d.sales[b.dataset.w];else return;saveDishes();render()};
 /* ---------- copia de seguridad ---------- */
-$('#exp').onclick=()=>{const u=URL.createObjectURL(new Blob([JSON.stringify({data,rows,cov})],{type:'application/json'})),l=document.createElement('a');l.href=u;l.download='enboga-copia-'+new Date().toISOString().slice(0,10)+'.json';l.click();URL.revokeObjectURL(u)};
+$('#exp').onclick=()=>{const u=URL.createObjectURL(new Blob([JSON.stringify({data,rows,cov,prods,dishes})],{type:'application/json'})),l=document.createElement('a');l.href=u;l.download='enboga-copia-'+new Date().toISOString().slice(0,10)+'.json';l.click();URL.revokeObjectURL(u)};
 $('#imp').onclick=()=>$('#file').click();
 $('#file').onchange=async e=>{try{const j0=JSON.parse(await e.target.files[0].text()),j=Array.isArray(j0)?j0:j0.data;if(!Array.isArray(j))throw 0;
  (j0.rows||[]).forEach(r=>{if(!rows.some(q=>rk(q)===rk(r)))rows.push({tipo:r.tipo,nat:r.nat,cat:r.cat,sub:r.sub||''})});
- Object.entries(j0.cov||{}).forEach(([k,v])=>{if(!(k in cov)&&v>0)cov[k]=v});saveCov();const ids=new Set(data.map(x=>x.id));j.filter(x=>x&&x.id&&x.fec&&x.imp>0&&!ids.has(x.id)).forEach(x=>data.push(x));saveData();ensureRows();render();alert('Copia restaurada')}catch(_){alert('El archivo no es una copia válida')}e.target.value=''};
+ Object.entries(j0.cov||{}).forEach(([k,v])=>{if(!(k in cov)&&v>0)cov[k]=v});saveCov();(j0.prods||[]).forEach(p=>{if(p&&p.id&&!prods.some(x=>x.id===p.id))prods.push(p)});(j0.dishes||[]).forEach(d=>{if(d&&d.id&&!dishes.some(x=>x.id===d.id))dishes.push({lines:[],extras:[],sales:{},...d})});saveProds();saveDishes();if(!curDish&&dishes[0])curDish=dishes[0].id;const ids=new Set(data.map(x=>x.id));j.filter(x=>x&&x.id&&x.fec&&x.imp>0&&!ids.has(x.id)).forEach(x=>data.push(x));saveData();ensureRows();render();alert('Copia restaurada')}catch(_){alert('El archivo no es una copia válida')}e.target.value=''};
 load();render();
 </script></body></html>
