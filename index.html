@@ -38,10 +38,24 @@ details{border-top:1px solid var(--line);padding:6px 0}summary{cursor:pointer;di
 details p{margin:2px 0 2px 18px;display:flex;justify-content:space-between;color:var(--mut);font-size:13px}
 .bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden;display:flex;margin:4px 0 10px}
 .empty{color:var(--mut);text-align:center;padding:20px}
+[hidden]{display:none!important}
+.tabs{max-width:1100px;margin:16px auto 0;padding:0 20px;display:flex;gap:8px}
+.tabs button{width:auto;background:transparent;color:var(--ink);border:1px solid var(--line);padding:8px 18px}
+.tabs button.on{background:var(--hd);color:var(--hdt);border-color:var(--hd)}
+.mt{font-size:13px;min-width:1300px}.mt td.lab{position:sticky;left:0;background:var(--card);min-width:200px;z-index:1}
+.mt td{padding:3px}.mt .num{text-align:right}
+.mt input,.mt select{padding:4px 6px;font-size:13px}.mt input.cell{width:74px;text-align:right}
+.mt .sub input{width:calc(100% - 14px);margin-left:14px}.mt .ch input{font-weight:600;background:transparent;border-color:transparent}
+.mt .ch td{font-weight:600;border-top:1px solid var(--line)}
+.mt .gh td{background:var(--hd);color:var(--hdt);font-weight:600;letter-spacing:.05em;padding:6px}
+.mt .gs td{font-weight:700;border-top:2px solid var(--ink)}.mt .tot td{font-weight:700;font-size:14px;border-top:2px solid var(--acc)}
+.mt .tt{font-weight:600}.multi{border-color:var(--acc)!important}.note{color:var(--mut);font-size:13px;margin:0 0 10px}
+.tbar{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:12px}.tbar form{flex:1;min-width:300px}
 </style></head><body>
 <header><div><h1>Enboga-Bar<small>Control de ingresos y gastos</small></h1>
 <div style="display:flex;gap:10px;align-items:end;flex-wrap:wrap"><label style="color:var(--hdt)">Periodo<select id="per"></select></label><button id="exp" type="button" style="width:auto">Exportar copia</button><button id="imp2" type="button" style="width:auto;background:var(--acc);color:#14323f">Importar copia</button><input id="file" type="file" accept=".json" hidden></div></div></header>
-<main>
+<nav class="tabs"><button class="on" data-v="v1">Panel</button><button data-v="v2">Tabla mensual</button></nav>
+<main id="v1">
 <section class="kpis" id="kpis"></section>
 <section class="card"><h2>Nuevo movimiento</h2>
 <form id="f">
@@ -69,6 +83,12 @@ details p{margin:2px 0 2px 18px;display:flex;justify-content:space-between;color
 </section>
 <section class="card"><h2>Movimientos</h2><div class="scroll" id="list"></div></section>
 </main>
+<main id="v2" hidden>
+<section class="card"><h2>Tabla mensual</h2>
+<p class="note">Escribe el importe de cada mes directamente en las celdas. Puedes renombrar categorías y subcategorías, mover una fila entre ingresos/gastos y fijos/variables, o eliminarla. Los subtotales y totales se calculan solos. Los movimientos del Panel aparecen aquí sumados por mes.</p>
+<div class="tbar"><label>Año<select id="yr"></select></label>
+<form id="af"><label>Tipo<select id="at"></select></label><label>Categoría<input id="ac" list="cats2" required></label><label>Subcategoría<input id="as" required></label><button>Añadir fila</button><datalist id="cats2"></datalist></form></div>
+<div class="scroll" id="tbl"></div></section></main>
 <script>
 const $=s=>document.querySelector(s),eur=n=>n.toLocaleString('es-ES',{style:'currency',currency:'EUR'});
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -77,9 +97,12 @@ gasto:{'Materia prima':['Pescado y marisco','Carne','Verdura','Bebidas'],Persona
 const COL=['#c4553a','#d9a441','#14323f','#4f7a3a','#2f8f9d','#9b5de5','#e07a5f','#8d99ae'];
 let data=[],store,per='all';
 const mon=d=>d.slice(0,7);
-function local(){let k='enboga';try{data=JSON.parse(localStorage.getItem(k)||'[]')}catch(e){data=[]}
-const save=()=>{try{localStorage.setItem(k,JSON.stringify(data))}catch(e){}};
-store={add:async m=>{data.push(m);save();render()},del:async id=>{data=data.filter(x=>x.id!==id);save();render()}};render()}
+let rows=[],yr=new Date().getFullYear(),view=[];
+const saveData=()=>{try{localStorage.setItem('enboga',JSON.stringify(data))}catch(e){}};
+const saveRows=()=>{try{localStorage.setItem('enboga_rows',JSON.stringify(rows))}catch(e){}};
+function put(arr,del=[]){del=new Set(del);data=data.filter(x=>!del.has(x.id));arr.forEach(m=>{const i=data.findIndex(x=>x.id===m.id);i<0?data.push(m):data[i]=m});saveData()}
+function local(){try{data=JSON.parse(localStorage.getItem('enboga')||'[]')}catch(e){data=[]}try{rows=JSON.parse(localStorage.getItem('enboga_rows')||'[]')}catch(e){rows=[]}
+store={add:async m=>{put([m]);render()},del:async id=>{put([],[id]);render()}};render()}
 function init(){local()}
 function sum(a){return a.reduce((t,x)=>t+x.imp,0)}
 function group(a,k){const m={};a.forEach(x=>m[x[k]]=(m[x[k]]||0)+x.imp);return Object.entries(m).sort((p,q)=>q[1]-p[1])}
@@ -101,14 +124,15 @@ s+=`<rect x="${x+w*.12}" y="${50-hi}" width="${w*.35}" height="${hi}" fill="var(
 el.innerHTML=s+'</svg><div class="leg"><div><span><i style="background:var(--inc)"></i>Ingresos</span><span><i style="background:var(--exp)"></i>Gastos</span></div></div>'}
 function fv(a,el){el.innerHTML=['ingreso','gasto'].map(t=>{const x=a.filter(y=>y.tipo===t),f=sum(x.filter(y=>y.nat==='fijo')),va=sum(x.filter(y=>y.nat==='variable')),T=f+va||1;
 return `<b class="${t==='ingreso'?'i':'e'}">${t==='ingreso'?'Ingresos':'Gastos'}</b><div class="bar"><div style="width:${f/T*100}%;background:var(--hd)"></div><div style="width:${va/T*100}%;background:var(--acc)"></div></div><div class="leg" style="margin-bottom:14px"><div><span><i style="background:var(--hd)"></i>Fijos</span><span>${eur(f)}</span></div><div><span><i style="background:var(--acc)"></i>Variables</span><span>${eur(va)}</span></div></div>`}).join('')}
-function render(){
+function render(){const f=document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.k;render0();if(f){const n=document.querySelector('[data-k="'+f+'"]');if(n){n.focus();try{n.select()}catch(e){}}}}
+function render0(){
 const ms=[...new Set([...data.map(x=>mon(x.fec)),new Date().toISOString().slice(0,7)])].sort().reverse();
 $('#per').innerHTML='<option value="all">Todo el historial</option>'+ms.map(m=>`<option value="${m}">${m}</option>`).join('');$('#per').value=per;
 const a=per==='all'?data:data.filter(x=>mon(x.fec)===per),I=a.filter(x=>x.tipo==='ingreso'),G=a.filter(x=>x.tipo==='gasto'),b=sum(I)-sum(G);
 $('#kpis').innerHTML=[['Ingresos',eur(sum(I)),'i'],['Gastos',eur(sum(G)),'e'],['Balance',eur(b),b>=0?'i':'e'],['Gastos fijos',eur(sum(G.filter(x=>x.nat==='fijo'))),''],['Ingresos fijos',eur(sum(I.filter(x=>x.nat==='fijo'))),'']].map(k=>`<div class="card kpi"><span>${k[0]}</span><b class="${k[2]}">${k[1]}</b></div>`).join('');
 donut(I,$('#di'));donut(G,$('#de'));breakdown(I,$('#bi'));breakdown(G,$('#be'));bars($('#bars'));fv(a,$('#fv'));
 $('#list').innerHTML=a.length?'<table><tr><th>Fecha<th>Tipo<th>Categoría<th>Subcategoría<th>Concepto<th>Importe<th></tr>'+[...a].sort((p,q)=>q.fec.localeCompare(p.fec)).map(x=>`<tr><td>${x.fec}<td><span class="tag">${x.tipo} · ${x.nat}</span><td>${esc(x.cat)}<td>${esc(x.sub)}<td>${esc(x.con||'')}<td class="${x.tipo==='ingreso'?'i':'e'}">${x.tipo==='ingreso'?'+':'−'}${eur(x.imp)}<td><button class="x" data-id="${x.id}" title="Eliminar">✕</button>`).join('')+'</table>':'<div class="empty">Aún no hay movimientos. Añade el primero arriba.</div>';
-hints()}
+hints();renderTable()}
 function hints(){const t=document.querySelector('[name=tipo]:checked').value;
 const cs=new Set(Object.keys(DEF[t]));data.filter(x=>x.tipo===t).forEach(x=>cs.add(x.cat));
 $('#cats').innerHTML=[...cs].map(c=>`<option value="${esc(c)}">`).join('');
@@ -122,9 +146,54 @@ $('#f').onsubmit=async e=>{e.preventDefault();const g=n=>document.querySelector(
 const m={id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),tipo:g('tipo'),nat:g('nat'),cat:$('#cat').value.trim(),sub:$('#sub').value.trim(),con:$('#con').value.trim(),imp:parseFloat($('#imp').value),fec:$('#fec').value};
 try{await store.add(m)}catch(err){alert('No se pudo guardar');return}
 ['#sub','#con','#imp'].forEach(s=>$(s).value='')};
-$('#exp').onclick=()=>{const u=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'}));const l=document.createElement('a');l.href=u;l.download='enboga-copia-'+new Date().toISOString().slice(0,10)+'.json';l.click();URL.revokeObjectURL(u)};
+const rk=x=>[x.tipo,x.nat,x.cat,x.sub].join('|');
+const GR=[['ingreso','fijo','Ingresos fijos'],['ingreso','variable','Ingresos variables'],['gasto','fijo','Gastos fijos'],['gasto','variable','Gastos variables']];
+const num=n=>n.toLocaleString('es-ES',{maximumFractionDigits:2}),Z=()=>Array(12).fill(0),add=(a,b)=>a.map((x,i)=>x+b[i]),tot=a=>a.reduce((t,x)=>t+x,0);
+const MN=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const cells=(v,c)=>v.map(x=>`<td class="num ${c||''}">${x?num(x):''}</td>`).join('')+`<td class="num tt ${c||''}">${num(tot(v))}</td>`;
+function renderTable(){
+ const rs=new Map(),mp=new Map();rows.forEach(r=>rs.set(rk(r),r));
+ data.forEach(x=>{if(x.fec.slice(0,4)!==String(yr))return;const k=rk(x),m=+x.fec.slice(5,7)-1;let o=mp.get(k);if(!o){o={v:Z(),n:Z()};mp.set(k,o)}o.v[m]+=x.imp;o.n[m]++;if(!rs.has(k))rs.set(k,{tipo:x.tipo,nat:x.nat,cat:x.cat,sub:x.sub})});
+ view=[...rs.values()].sort((a,b)=>a.cat.localeCompare(b.cat)||a.sub.localeCompare(b.sub));
+ const ys=[...new Set([...data.map(x=>+x.fec.slice(0,4)),yr,new Date().getFullYear(),new Date().getFullYear()+1])].sort();
+ $('#yr').innerHTML=ys.map(y=>`<option>${y}</option>`).join('');$('#yr').value=yr;
+ $('#at').innerHTML=GR.map(g=>`<option value="${g[0]}|${g[1]}">${g[2]}</option>`).join('');
+ $('#cats2').innerHTML=[...new Set(view.map(r=>r.cat))].map(c=>`<option value="${esc(c)}">`).join('');
+ let h='<table class="mt"><tr><th class="lab" style="position:sticky;left:0;background:var(--card)">Concepto</th>'+MN.map(m=>`<th class="num">${m}</th>`).join('')+'<th class="num">Total</th><th></th></tr>';const G={};
+ GR.forEach(([t,n,lab])=>{const rr=view.filter(r=>r.tipo===t&&r.nat===n);let gv=Z();h+=`<tr class="gh"><td colspan="15">${lab}</td></tr>`;
+  [...new Set(rr.map(r=>r.cat))].forEach(c=>{const sr=rr.filter(r=>r.cat===c);let cv=Z();sr.forEach(r=>{const o=mp.get(rk(r));if(o)cv=add(cv,o.v)});gv=add(gv,cv);
+   h+=`<tr class="ch"><td class="lab"><input data-k="c-${t}${n}-${esc(c)}" data-a="cat" data-t="${t}" data-n="${n}" data-o="${esc(c)}" value="${esc(c)}"></td>${cells(cv)}<td></td></tr>`;
+   sr.forEach(r=>{const i=view.indexOf(r),o=mp.get(rk(r))||{v:Z(),n:Z()};
+    h+=`<tr><td class="lab sub"><input data-k="s${i}" data-a="sub" data-i="${i}" value="${esc(r.sub)}"></td>`+o.v.map((x,m)=>`<td class="num"><input class="cell${o.n[m]>1?' multi':''}" type="number" step="0.01" min="0" data-k="x${i}-${m}" data-a="cell" data-i="${i}" data-m="${m}" value="${x?+x.toFixed(2):''}" title="${o.n[m]>1?o.n[m]+' movimientos sumados':''}"></td>`).join('')+`<td class="num tt">${num(tot(o.v))}</td><td style="white-space:nowrap"><select data-a="mv" data-i="${i}">${GR.map(g=>`<option value="${g[0]}|${g[1]}"${g[0]===t&&g[1]===n?' selected':''}>${g[2]}</option>`).join('')}</select> <button class="x" data-a="del" data-i="${i}" title="Eliminar fila">✕</button></td></tr>`})});
+  G[t+n]=gv;h+=`<tr class="gs"><td class="lab">Subtotal ${lab.toLowerCase()}</td>${cells(gv)}<td></td></tr>`});
+ const ti=add(G.ingresofijo,G.ingresovariable),tg=add(G.gastofijo,G.gastovariable),bl=ti.map((x,i)=>x-tg[i]);
+ h+=`<tr class="gh"><td colspan="15">Totales</td></tr><tr class="tot"><td class="lab">Total ingresos</td>${cells(ti,'i')}<td></td></tr><tr class="tot"><td class="lab">Total gastos</td>${cells(tg,'e')}<td></td></tr><tr class="tot"><td class="lab">Balance</td>${bl.map(x=>`<td class="num ${x>=0?'i':'e'}">${x?num(x):''}</td>`).join('')}<td class="num ${tot(bl)>=0?'i':'e'}">${num(tot(bl))}</td><td></td></tr></table>`;
+ $('#tbl').innerHTML=view.length?h:'<div class="empty">Aún no hay filas. Añade una arriba (tipo, categoría y subcategoría).</div>'}
+function setCell(r,m,val){const ym=yr+'-'+String(m+1).padStart(2,'0'),ex=data.filter(x=>rk(x)===rk(r)&&mon(x.fec)===ym);
+ if(ex.length>1&&!confirm('Esta celda suma '+ex.length+' movimientos del panel. Al editarla se sustituirán por un único importe. ¿Continuar?'))return;
+ if(!rows.some(q=>rk(q)===rk(r))){rows.push({tipo:r.tipo,nat:r.nat,cat:r.cat,sub:r.sub});saveRows()}
+ if(!(val>0)){put([],ex.map(x=>x.id));return}
+ if(ex.length===1)put([{...ex[0],imp:val}]);
+ else put([{id:'t'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),tipo:r.tipo,nat:r.nat,cat:r.cat,sub:r.sub,con:'Tabla mensual',imp:val,fec:ym+'-01'}],ex.map(x=>x.id))}
+function editRow(r,ch){const nr={...r,...ch};if(!nr.sub||!nr.cat)return;const o=rk(r),n=rk(nr);if(o===n)return;
+ put(data.filter(x=>rk(x)===o).map(x=>({...x,...ch})));rows=rows.filter(q=>rk(q)!==o&&rk(q)!==n);rows.push({tipo:nr.tipo,nat:nr.nat,cat:nr.cat,sub:nr.sub});saveRows()}
+function catRename(t,n,old,nw){if(!nw||nw===old)return;put(data.filter(x=>x.tipo===t&&x.nat===n&&x.cat===old).map(x=>({...x,cat:nw})));rows=rows.map(q=>q.tipo===t&&q.nat===n&&q.cat===old?{...q,cat:nw}:q);saveRows()}
+function delRow(r){const k=rk(r),ex=data.filter(x=>rk(x)===k);if(!confirm('¿Eliminar la fila "'+r.cat+' › '+r.sub+'"'+(ex.length?' y sus '+ex.length+' movimientos (todos los meses y años)':'')+'?'))return;put([],ex.map(x=>x.id));rows=rows.filter(q=>rk(q)!==k);saveRows()}
+$('#tbl').onchange=e=>{const el=e.target,a=el.dataset.a;if(!a)return;const r=view[+el.dataset.i];
+ if(a==='cell')setCell(r,+el.dataset.m,parseFloat(el.value));
+ else if(a==='sub')editRow(r,{sub:el.value.trim()});
+ else if(a==='mv'){const [t,n]=el.value.split('|');editRow(r,{tipo:t,nat:n})}
+ else if(a==='cat')catRename(el.dataset.t,el.dataset.n,el.dataset.o,el.value.trim());
+ setTimeout(render,0)};
+$('#tbl').onclick=e=>{const b=e.target.closest('[data-a="del"]');if(b){delRow(view[+b.dataset.i]);render()}};
+$('#yr').onchange=e=>{yr=+e.target.value;render()};
+$('#af').onsubmit=e=>{e.preventDefault();const [t,n]=$('#at').value.split('|'),r={tipo:t,nat:n,cat:$('#ac').value.trim(),sub:$('#as').value.trim()};
+ if(!r.cat||!r.sub)return;if(!rows.some(q=>rk(q)===rk(r))){rows.push(r);saveRows()}$('#as').value='';render()};
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));$('#v1').hidden=b.dataset.v!=='v1';$('#v2').hidden=b.dataset.v!=='v2'});
+
+$('#exp').onclick=()=>{const u=URL.createObjectURL(new Blob([JSON.stringify({data,rows})],{type:'application/json'}));const l=document.createElement('a');l.href=u;l.download='enboga-copia-'+new Date().toISOString().slice(0,10)+'.json';l.click();URL.revokeObjectURL(u)};
 $('#imp2').onclick=()=>$('#file').click();
-$('#file').onchange=async e=>{try{const j=JSON.parse(await e.target.files[0].text());if(!Array.isArray(j))throw 0;
+$('#file').onchange=async e=>{try{const j0=JSON.parse(await e.target.files[0].text()),j=Array.isArray(j0)?j0:j0.data;if(!Array.isArray(j))throw 0;(j0.rows||[]).forEach(r=>{if(!rows.some(q=>rk(q)===rk(r)))rows.push(r)});saveRows();
 const ids=new Set(data.map(x=>x.id));j.filter(x=>x&&x.id&&!ids.has(x.id)).forEach(x=>data.push(x));try{localStorage.setItem('enboga',JSON.stringify(data))}catch(_){}render();alert('Copia importada')}catch(_){alert('Archivo no válido')}e.target.value=''};
 init();
 </script></body></html>
