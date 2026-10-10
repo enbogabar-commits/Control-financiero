@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Enboga-Bar · Control de cuentas</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥘</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f6efe2;--card:#fffaf1;--ink:#14323f;--mut:#6b7a80;--line:#e3d8c3;--inc:#4f7a3a;--exp:#c4553a;--acc:#d9a441;--hd:#14323f;--hdt:#f6efe2}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e222c;--card:#15303c;--ink:#f1e8d6;--mut:#9fb0b6;--line:#26424f;--inc:#8fbf6f;--exp:#e8806a;--hd:#0a1a22}}
+:root[data-theme="dark"]{--bg:#0e222c;--card:#15303c;--ink:#f1e8d6;--mut:#9fb0b6;--line:#26424f;--inc:#8fbf6f;--exp:#e8806a;--hd:#0a1a22}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif}
+h1,h2{font-family:'Playfair Display',Georgia,serif;margin:0}
+header{background:var(--hd);color:var(--hdt);padding:22px 20px;border-bottom:4px solid var(--acc)}
+header div{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+header h1{font-size:28px}header small{display:block;opacity:.7;letter-spacing:.12em;text-transform:uppercase;font-size:11px}
+main{max-width:1100px;margin:auto;padding:20px;display:grid;gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.card h2{font-size:20px;margin-bottom:12px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.kpi span{color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.kpi b{display:block;font:700 26px 'Playfair Display',Georgia,serif}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+label{font-size:12px;color:var(--mut);display:grid;gap:4px}
+input,select,button{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
+button{background:var(--exp);color:#fff;border:0;font-weight:600;cursor:pointer;align-self:end}
+.seg{display:flex;gap:6px}.seg label{flex:1;display:block}.seg input{display:none}
+.seg span{display:block;text-align:center;padding:9px;border:1px solid var(--line);border-radius:8px;cursor:pointer;color:var(--ink)}
+.seg input:checked+span{background:var(--hd);color:var(--hdt);border-color:var(--hd)}
+.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{color:var(--mut);font-weight:500;font-size:12px}
+.i{color:var(--inc)}.e{color:var(--exp)}.tag{font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--line)}
+.x{background:none;color:var(--mut);padding:2px 8px;width:auto}
+.leg{display:grid;gap:4px;font-size:13px;margin-top:8px}.leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.leg div{display:flex;justify-content:space-between}
+details{border-top:1px solid var(--line);padding:6px 0}summary{cursor:pointer;display:flex;justify-content:space-between;font-weight:500}
+details p{margin:2px 0 2px 18px;display:flex;justify-content:space-between;color:var(--mut);font-size:13px}
+.bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden;display:flex;margin:4px 0 10px}
+.empty{color:var(--mut);text-align:center;padding:20px}
+</style></head><body>
+<header><div><h1>Enboga-Bar<small>Control de ingresos y gastos</small></h1>
+<div style="display:flex;gap:10px;align-items:end;flex-wrap:wrap"><label style="color:var(--hdt)">Periodo<select id="per"></select></label><button id="exp" type="button" style="width:auto">Exportar copia</button><button id="imp2" type="button" style="width:auto;background:var(--acc);color:#14323f">Importar copia</button><input id="file" type="file" accept=".json" hidden></div></div></header>
+<main>
+<section class="kpis" id="kpis"></section>
+<section class="card"><h2>Nuevo movimiento</h2>
+<form id="f">
+<label>Tipo<div class="seg"><label><input type="radio" name="tipo" value="ingreso" checked><span>Ingreso</span></label><label><input type="radio" name="tipo" value="gasto"><span>Gasto</span></label></div></label>
+<label>Naturaleza<div class="seg"><label><input type="radio" name="nat" value="fijo" checked><span>Fijo</span></label><label><input type="radio" name="nat" value="variable"><span>Variable</span></label></div></label>
+<label>Categoría<input id="cat" list="cats" required placeholder="Ej: Ventas"></label>
+<label>Subcategoría<input id="sub" list="subs" required placeholder="Ej: Terraza"></label>
+<label>Concepto (opcional)<input id="con"></label>
+<label>Importe (€)<input id="imp" type="number" step="0.01" min="0.01" required></label>
+<label>Fecha<input id="fec" type="date" required></label>
+<button>Añadir</button>
+<datalist id="cats"></datalist><datalist id="subs"></datalist>
+</form></section>
+<section class="grid2">
+<div class="card"><h2>Ingresos vs gastos por mes</h2><div id="bars"></div></div>
+<div class="card"><h2>Fijos vs variables</h2><div id="fv"></div></div>
+</section>
+<section class="grid2">
+<div class="card"><h2>Ingresos por categoría</h2><div id="di"></div></div>
+<div class="card"><h2>Gastos por categoría</h2><div id="de"></div></div>
+</section>
+<section class="grid2">
+<div class="card"><h2>Desglose de ingresos</h2><div id="bi"></div></div>
+<div class="card"><h2>Desglose de gastos</h2><div id="be"></div></div>
+</section>
+<section class="card"><h2>Movimientos</h2><div class="scroll" id="list"></div></section>
+</main>
+<script>
+const $=s=>document.querySelector(s),eur=n=>n.toLocaleString('es-ES',{style:'currency',currency:'EUR'});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const DEF={ingreso:{Ventas:['Sala','Terraza','Delivery','Eventos'],'Otros ingresos':['Subvenciones','Varios']},
+gasto:{'Materia prima':['Pescado y marisco','Carne','Verdura','Bebidas'],Personal:['Nóminas','Seguridad Social'],Local:['Alquiler','Luz','Agua','Gas'],Otros:['Mantenimiento','Marketing','Gestoría']}};
+const COL=['#c4553a','#d9a441','#14323f','#4f7a3a','#2f8f9d','#9b5de5','#e07a5f','#8d99ae'];
+let data=[],store,per='all';
+const mon=d=>d.slice(0,7);
+function local(){let k='enboga';try{data=JSON.parse(localStorage.getItem(k)||'[]')}catch(e){data=[]}
+const save=()=>{try{localStorage.setItem(k,JSON.stringify(data))}catch(e){}};
+store={add:async m=>{data.push(m);save();render()},del:async id=>{data=data.filter(x=>x.id!==id);save();render()}};render()}
+function init(){local()}
+function sum(a){return a.reduce((t,x)=>t+x.imp,0)}
+function group(a,k){const m={};a.forEach(x=>m[x[k]]=(m[x[k]]||0)+x.imp);return Object.entries(m).sort((p,q)=>q[1]-p[1])}
+function donut(a,el){const t=sum(a);if(!t){el.innerHTML='<div class="empty">Sin datos</div>';return}
+let off=0,s='<svg viewBox="0 0 42 42" style="width:170px;display:block;margin:auto"><circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--line)" stroke-width="7"/>',l='';
+group(a,'cat').forEach(([k,v],i)=>{const p=v/t*100,c=COL[i%COL.length];
+s+=`<circle cx="21" cy="21" r="15.9" fill="none" stroke="${c}" stroke-width="7" stroke-dasharray="${p} ${100-p}" stroke-dashoffset="${25-off}"/>`;off+=p;
+l+=`<div><span><i style="background:${c}"></i>${esc(k)}</span><span>${eur(v)} · ${p.toFixed(0)}%</span></div>`});
+el.innerHTML=s+'</svg><div class="leg">'+l+'</div>'}
+function breakdown(a,el){if(!a.length){el.innerHTML='<div class="empty">Sin datos</div>';return}const t=sum(a);
+el.innerHTML=group(a,'cat').map(([c,v],i)=>{const subs=group(a.filter(x=>x.cat===c),'sub');
+return `<details><summary><span>${esc(c)}</span><span>${eur(v)}</span></summary>${subs.map(([s,w])=>`<p><span>${esc(s)}</span><span>${eur(w)}</span></p>`).join('')}</details>`}).join('')}
+function bars(el){const ms=[...new Set([...data.map(x=>mon(x.fec))])].sort().slice(-6);
+if(!ms.length){el.innerHTML='<div class="empty">Sin datos</div>';return}
+const v=ms.map(m=>[sum(data.filter(x=>mon(x.fec)===m&&x.tipo==='ingreso')),sum(data.filter(x=>mon(x.fec)===m&&x.tipo==='gasto'))]);
+const mx=Math.max(...v.flat(),1),w=100/ms.length;let s='<svg viewBox="0 0 100 62" style="width:100%"><line x1="0" y1="50" x2="100" y2="50" stroke="var(--line)" stroke-width=".4"/>';
+v.forEach(([i,g],n)=>{const x=n*w,hi=i/mx*44,hg=g/mx*44;
+s+=`<rect x="${x+w*.12}" y="${50-hi}" width="${w*.35}" height="${hi}" fill="var(--inc)" rx=".6"/><rect x="${x+w*.5}" y="${50-hg}" width="${w*.35}" height="${hg}" fill="var(--exp)" rx=".6"/><text x="${x+w/2}" y="57" font-size="3.2" text-anchor="middle" fill="var(--mut)">${ms[n].slice(5)}/${ms[n].slice(2,4)}</text>`});
+el.innerHTML=s+'</svg><div class="leg"><div><span><i style="background:var(--inc)"></i>Ingresos</span><span><i style="background:var(--exp)"></i>Gastos</span></div></div>'}
+function fv(a,el){el.innerHTML=['ingreso','gasto'].map(t=>{const x=a.filter(y=>y.tipo===t),f=sum(x.filter(y=>y.nat==='fijo')),va=sum(x.filter(y=>y.nat==='variable')),T=f+va||1;
+return `<b class="${t==='ingreso'?'i':'e'}">${t==='ingreso'?'Ingresos':'Gastos'}</b><div class="bar"><div style="width:${f/T*100}%;background:var(--hd)"></div><div style="width:${va/T*100}%;background:var(--acc)"></div></div><div class="leg" style="margin-bottom:14px"><div><span><i style="background:var(--hd)"></i>Fijos</span><span>${eur(f)}</span></div><div><span><i style="background:var(--acc)"></i>Variables</span><span>${eur(va)}</span></div></div>`}).join('')}
+function render(){
+const ms=[...new Set([...data.map(x=>mon(x.fec)),new Date().toISOString().slice(0,7)])].sort().reverse();
+$('#per').innerHTML='<option value="all">Todo el historial</option>'+ms.map(m=>`<option value="${m}">${m}</option>`).join('');$('#per').value=per;
+const a=per==='all'?data:data.filter(x=>mon(x.fec)===per),I=a.filter(x=>x.tipo==='ingreso'),G=a.filter(x=>x.tipo==='gasto'),b=sum(I)-sum(G);
+$('#kpis').innerHTML=[['Ingresos',eur(sum(I)),'i'],['Gastos',eur(sum(G)),'e'],['Balance',eur(b),b>=0?'i':'e'],['Gastos fijos',eur(sum(G.filter(x=>x.nat==='fijo'))),''],['Ingresos fijos',eur(sum(I.filter(x=>x.nat==='fijo'))),'']].map(k=>`<div class="card kpi"><span>${k[0]}</span><b class="${k[2]}">${k[1]}</b></div>`).join('');
+donut(I,$('#di'));donut(G,$('#de'));breakdown(I,$('#bi'));breakdown(G,$('#be'));bars($('#bars'));fv(a,$('#fv'));
+$('#list').innerHTML=a.length?'<table><tr><th>Fecha<th>Tipo<th>Categoría<th>Subcategoría<th>Concepto<th>Importe<th></tr>'+[...a].sort((p,q)=>q.fec.localeCompare(p.fec)).map(x=>`<tr><td>${x.fec}<td><span class="tag">${x.tipo} · ${x.nat}</span><td>${esc(x.cat)}<td>${esc(x.sub)}<td>${esc(x.con||'')}<td class="${x.tipo==='ingreso'?'i':'e'}">${x.tipo==='ingreso'?'+':'−'}${eur(x.imp)}<td><button class="x" data-id="${x.id}" title="Eliminar">✕</button>`).join('')+'</table>':'<div class="empty">Aún no hay movimientos. Añade el primero arriba.</div>';
+hints()}
+function hints(){const t=document.querySelector('[name=tipo]:checked').value;
+const cs=new Set(Object.keys(DEF[t]));data.filter(x=>x.tipo===t).forEach(x=>cs.add(x.cat));
+$('#cats').innerHTML=[...cs].map(c=>`<option value="${esc(c)}">`).join('');
+const ss=new Set(DEF[t][$('#cat').value]||[]);data.filter(x=>x.tipo===t&&x.cat===$('#cat').value).forEach(x=>ss.add(x.sub));
+$('#subs').innerHTML=[...ss].map(c=>`<option value="${esc(c)}">`).join('')}
+$('#per').onchange=e=>{per=e.target.value;render()};
+document.querySelectorAll('[name=tipo]').forEach(r=>r.onchange=hints);$('#cat').oninput=hints;
+$('#list').onclick=e=>{const id=e.target.dataset.id;if(id&&confirm('¿Eliminar este movimiento?'))store.del(id)};
+$('#fec').value=new Date().toISOString().slice(0,10);
+$('#f').onsubmit=async e=>{e.preventDefault();const g=n=>document.querySelector(`[name=${n}]:checked`).value;
+const m={id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),tipo:g('tipo'),nat:g('nat'),cat:$('#cat').value.trim(),sub:$('#sub').value.trim(),con:$('#con').value.trim(),imp:parseFloat($('#imp').value),fec:$('#fec').value};
+try{await store.add(m)}catch(err){alert('No se pudo guardar');return}
+['#sub','#con','#imp'].forEach(s=>$(s).value='')};
+$('#exp').onclick=()=>{const u=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'}));const l=document.createElement('a');l.href=u;l.download='enboga-copia-'+new Date().toISOString().slice(0,10)+'.json';l.click();URL.revokeObjectURL(u)};
+$('#imp2').onclick=()=>$('#file').click();
+$('#file').onchange=async e=>{try{const j=JSON.parse(await e.target.files[0].text());if(!Array.isArray(j))throw 0;
+const ids=new Set(data.map(x=>x.id));j.filter(x=>x&&x.id&&!ids.has(x.id)).forEach(x=>data.push(x));try{localStorage.setItem('enboga',JSON.stringify(data))}catch(_){}render();alert('Copia importada')}catch(_){alert('Archivo no válido')}e.target.value=''};
+init();
+</script></body></html>
