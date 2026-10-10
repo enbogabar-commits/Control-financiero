@@ -77,14 +77,19 @@ dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background
 dialog::backdrop{background:rgba(10,26,34,.55)}
 dialog h3{font-size:22px;margin-bottom:14px}
 dialog label{display:block;font-size:12px;color:var(--mut);font-weight:600;margin:12px 0 4px}
-dialog input[type=text]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+dialog input:not([type=radio]){width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
 .seg{display:flex;gap:6px}.seg label{flex:1;margin:0}.seg input{display:none}
 .seg span{display:block;text-align:center;padding:10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:14px;color:var(--ink);font-weight:500}
 .seg input:checked+span{background:var(--hd);color:var(--hdt);border-color:var(--hd)}
 .seg.t input[value=ingreso]:checked+span{background:var(--inc);border-color:var(--inc);color:#fff}.seg.t input[value=gasto]:checked+span{background:var(--exp);border-color:var(--exp);color:#fff}
 .acts{display:flex;gap:8px;margin-top:20px;align-items:center}.acts .sp{flex:1}
 .danger{background:none;border:0;color:var(--exp);font-weight:600;padding:8px}
-@media(max-width:720px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr);gap:8px}.kpi{padding:10px 12px}.kpi b{font-size:19px}.mt .lab{min-width:112px;max-width:112px;padding:0 6px}.mt .tt{min-width:60px;padding:0 6px}.mt thead th{min-width:54px}.brand h1{font-size:20px}header .wrap{padding:10px 14px}.brand{flex:1}.tools{order:2}.mnav{order:3;width:100%}.mnav select{flex:1}.tabs button{padding:9px 14px}.wrap{padding:0 12px}}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}.topbar .tabs{margin-bottom:0}
+.btn.big{margin:0;background:var(--acc);color:#17323d;padding:12px 20px;box-shadow:var(--sh)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--hd);color:var(--hdt);padding:11px 20px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.3);z-index:99;font-weight:500}
+@keyframes fl{0%{box-shadow:inset 0 0 0 3px var(--acc);background:var(--today)}100%{box-shadow:none}}.flash{animation:fl 2.2s ease-out}
+@media(max-width:720px){.topbar .btn.big{width:100%}.grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr);gap:8px}.kpi{padding:10px 12px}.kpi b{font-size:19px}.mt .lab{min-width:112px;max-width:112px;padding:0 6px}.mt .tt{min-width:60px;padding:0 6px}.mt thead th{min-width:54px}.brand h1{font-size:20px}header .wrap{padding:10px 14px}.brand{flex:1}.tools{order:2}.mnav{order:3;width:100%}.mnav select{flex:1}.tabs button{padding:9px 14px}.wrap{padding:0 12px}}
 </style></head><body>
 <header><div class="wrap">
  <div class="brand"><span class="logo">🥘</span><div><h1>Enboga-Bar</h1><small>Ingresos y gastos</small></div></div>
@@ -93,9 +98,9 @@ dialog input[type=text]{width:100%;padding:10px 12px;border:1px solid var(--line
 </div></header>
 <div class="wrap">
  <section class="kpis" id="kpis"></section>
- <div class="tabs"><button class="on" data-v="t">📋 Tabla diaria</button><button data-v="r">📊 Gráficos</button></div>
+ <div class="topbar"><div class="tabs"><button class="on" data-v="t">📋 Tabla diaria</button><button data-v="r">📊 Gráficos</button></div><button class="btn big" id="nm">＋ Nuevo movimiento</button></div>
  <section id="vt">
-  <p class="hint">Escribe cada importe en su día. <b>Enter</b> baja a la celda de abajo. Toca el nombre de un concepto para editarlo o eliminarlo.</p>
+  <p class="hint">Escribe cada importe en su día o usa <b>＋ Nuevo movimiento</b>: se suma solo a la tabla. <b>Enter</b> baja a la celda de abajo. Toca el nombre de un concepto para editarlo.</p>
   <div id="tbl"></div>
  </section>
  <section id="vr" hidden class="grid" style="margin-bottom:30px">
@@ -117,6 +122,18 @@ dialog input[type=text]{width:100%;padding:10px 12px;border:1px solid var(--line
  <datalist id="cats2"></datalist><datalist id="subs2"></datalist>
  <div class="acts"><button type="button" class="danger" id="ddel">Eliminar</button><span class="sp"></span><button type="button" class="btn ghost" id="dcan">Cancelar</button><button class="btn" id="dok">Guardar</button></div>
 </form></dialog>
+<dialog id="dlg2"><form id="mfm">
+ <h3>Nuevo movimiento</h3>
+ <div class="row2"><div><label>Día</label><input type="date" id="mf" required></div><div><label>Importe (€)</label><input type="number" id="mi" step="0.01" min="0.01" inputmode="decimal" required placeholder="0,00"></div></div>
+ <label>Tipo</label><div class="seg t"><label><input type="radio" name="mtipo" value="ingreso"><span>Ingreso</span></label><label><input type="radio" name="mtipo" value="gasto"><span>Gasto</span></label></div>
+ <label>Naturaleza</label><div class="seg"><label><input type="radio" name="mnat" value="fijo"><span>Fijo</span></label><label><input type="radio" name="mnat" value="variable"><span>Variable</span></label></div>
+ <label>Categoría</label><input type="text" id="mc" list="cats3" required autocomplete="off" placeholder="Ej: Ventas, Personal, Materia prima">
+ <label>Subcategoría <small>(opcional)</small></label><input type="text" id="ms" list="subs3" autocomplete="off" placeholder="Ej: Terraza, Alquiler…">
+ <label>Nota <small>(opcional)</small></label><input type="text" id="mn" autocomplete="off" placeholder="Ej: factura de pescadería">
+ <datalist id="cats3"></datalist><datalist id="subs3"></datalist>
+ <div class="acts"><span class="sp"></span><button type="button" class="btn ghost" id="mcan">Cancelar</button><button class="btn" id="mok">Añadir a la tabla</button></div>
+</form></dialog>
+<div id="toast" hidden></div>
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],DIA=['D','L','M','X','J','V','S'];
@@ -126,7 +143,7 @@ const EJ=[['ingreso','variable','Ventas','Sala'],['ingreso','variable','Ventas',
 const eur=n=>n.toLocaleString('es-ES',{style:'currency',currency:'EUR'}),num=n=>n.toLocaleString('es-ES',{maximumFractionDigits:2}),pad=n=>String(n).padStart(2,'0');
 const Z=n=>Array(n).fill(0),add=(a,b)=>a.map((x,i)=>x+b[i]),tot=a=>a.reduce((t,x)=>t+x,0),sum=a=>a.reduce((t,x)=>t+x.imp,0);
 const rk=x=>[x.tipo,x.nat,x.cat,x.sub||''].join('|');
-const now0=new Date();let data=[],rows=[],cur={y:now0.getFullYear(),m:now0.getMonth()},tab='t',view=[],ed=null,scrolled='';
+let lastMv={tipo:'ingreso',nat:'variable'};const now0=new Date();let data=[],rows=[],cur={y:now0.getFullYear(),m:now0.getMonth()},tab='t',view=[],ed=null,scrolled='';
 const ym=(c=cur)=>c.y+'-'+pad(c.m+1),nd=()=>new Date(cur.y,cur.m+1,0).getDate();
 /* ---------- almacenamiento (en el navegador) ---------- */
 const saveData=()=>{try{localStorage.setItem('enboga',JSON.stringify(data))}catch(e){}};
@@ -227,6 +244,27 @@ function shift(d){cur.m+=d;if(cur.m<0){cur.m=11;cur.y--}if(cur.m>11){cur.m=0;cur
 $('#prev').onclick=()=>shift(-1);$('#next').onclick=()=>shift(1);$('#hoy').onclick=()=>{cur={y:now0.getFullYear(),m:now0.getMonth()};scrolled='';render()};
 $('#sm').onchange=e=>{cur.m=+e.target.value;render()};$('#sy').onchange=e=>{cur.y=+e.target.value;render()};
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{tab=b.dataset.v;document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));render()});
+
+/* ---------- nuevo movimiento ---------- */
+function mvHints(){const t=radio('mtipo'),n=radio('mnat'),c=$('#mc').value.trim(),rr=rows.filter(r=>r.tipo===t&&r.nat===n);
+ $('#cats3').innerHTML=[...new Set(rr.map(r=>r.cat))].map(x=>`<option value="${esc(x)}">`).join('');
+ $('#subs3').innerHTML=[...new Set(rr.filter(r=>r.cat===c&&r.sub).map(r=>r.sub))].map(x=>`<option value="${esc(x)}">`).join('')}
+function toast(t){const e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,2800)}
+function openMv(){const t=new Date(),d=t.getFullYear()===cur.y&&t.getMonth()===cur.m?t:new Date(cur.y,cur.m,1);
+ $('#mf').value=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+ document.querySelector(`[name=mtipo][value=${lastMv.tipo}]`).checked=true;document.querySelector(`[name=mnat][value=${lastMv.nat}]`).checked=true;
+ ['#mc','#ms','#mi','#mn'].forEach(s=>$(s).value='');mvHints();$('#dlg2').showModal();$('#mi').focus()}
+$('#nm').onclick=openMv;$('#mcan').onclick=()=>$('#dlg2').close();$('#mc').oninput=mvHints;
+document.querySelectorAll('[name=mtipo],[name=mnat]').forEach(r=>r.onchange=mvHints);
+$('#mfm').onsubmit=e=>{e.preventDefault();const c=$('#mc').value.trim(),imp=Math.round(parseFloat($('#mi').value)*100)/100,fec=$('#mf').value;if(!c||!fec||!(imp>0))return;
+ const r={tipo:radio('mtipo'),nat:radio('mnat'),cat:c,sub:$('#ms').value.trim()};lastMv={tipo:r.tipo,nat:r.nat};
+ if(!rows.some(q=>rk(q)===rk(r))){rows.push(r);saveRows()}
+ put([{id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),...r,con:$('#mn').value.trim(),imp,fec}]);
+ cur={y:+fec.slice(0,4),m:+fec.slice(5,7)-1};tab='t';document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x.dataset.v==='t'));
+ $('#dlg2').close();render();
+ const i=view.findIndex(q=>rk(q)===rk(r)),d=+fec.slice(8,10)-1,cell=document.querySelector(`[data-k="x${i}-${d}"]`);
+ if(cell){cell.scrollIntoView({block:'center',inline:'center'});const td=cell.parentElement;td.classList.remove('flash');void td.offsetWidth;td.classList.add('flash')}
+ toast('Añadido: '+eur(imp)+' · '+c+(r.sub?' › '+r.sub:'')+' · '+fec.slice(8,10)+'/'+fec.slice(5,7))};
 /* ---------- copia de seguridad ---------- */
 $('#exp').onclick=()=>{const u=URL.createObjectURL(new Blob([JSON.stringify({data,rows})],{type:'application/json'})),l=document.createElement('a');l.href=u;l.download='enboga-copia-'+new Date().toISOString().slice(0,10)+'.json';l.click();URL.revokeObjectURL(u)};
 $('#imp').onclick=()=>$('#file').click();
